@@ -1,0 +1,23 @@
+{% extends 'asistencia/base.html' %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block contenido %}
+<header class="cabecera">
+  <div><h1>{{ titulo }}</h1></div>
+</header>
+<section class="tarjeta formulario">
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% for campo in form %}
+      <div class="campo {% if campo.field.widget.input_type == 'checkbox' %}campo-check{% endif %}">
+        <label for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+        {{ campo }}
+        {% for e in campo.errors %}<span class="error">{{ e }}</span>{% endfor %}
+      </div>
+    {% endfor %}
+    <div class="acciones">
+      <button class="btn primario">Guardar</button>
+      <a class="btn" href="{% if persona %}{% url 'asistencia:persona_detalle' persona.pk %}{% else %}{% url 'asistencia:personas' %}{% endif %}">Cancelar</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'asistencia/base.html' %}
+{% block titulo %}Asistencias{% endblock %}
+{% block contenido %}
+<header class="cabecera">
+  <div>
+    <h1>Asistencias</h1>
+    <p class="sub">{{ total }} registro{{ total|pluralize }} encontrado{{ total|pluralize }}.</p>
+  </div>
+</header>
+
+<form class="filtros tarjeta" method="get">
+  {% for campo in form %}
+    <div class="campo"><label for="{{ campo.id_for_label }}">{{ campo.label }}</label>{{ campo }}</div>
+  {% endfor %}
+  <div class="acciones"><button class="btn">Filtrar</button><a class="btn" href="{% url 'asistencia:asistencias' %}">Limpiar</a></div>
+</form>
+
+<section class="tarjeta">
+  {% if asistencias %}
+  <table class="tabla">
+    <thead><tr><th>Fecha</th><th>Hora</th><th>Persona</th><th>Cédula</th><th>Curso</th><th>Estado</th><th>Origen</th><th>Confianza</th></tr></thead>
+    <tbody>
+      {% for a in asistencias %}
+      <tr>
+        <td>{{ a.fecha|date:'d/m/Y' }}</td>
+        <td>{{ a.hora|time:'H:i:s' }}</td>
+        <td><a href="{% url 'asistencia:persona_detalle' a.persona_id %}">{{ a.persona }}</a></td>
+        <td>{{ a.persona.cedula }}</td>
+        <td>{{ a.persona.curso|default:'—' }}</td>
+        <td><span class="chip {{ a.estado }}">{{ a.get_estado_display }}</span></td>
+        <td>{{ a.get_origen_display }}</td>
+        <td>{{ a.confianza|floatformat:0 }}%</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="vacio">No hay asistencias con esos filtros.</p>{% endif %}
+</section>
+{% endblock %}

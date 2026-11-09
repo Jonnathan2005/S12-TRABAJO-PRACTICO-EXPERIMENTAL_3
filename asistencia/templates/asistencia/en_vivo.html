@@ -1,0 +1,54 @@
+{% extends 'asistencia/base.html' %}
+{% block titulo %}Emociones en vivo{% endblock %}
+{% block contenido %}
+<header class="cabecera">
+  <div>
+    <h1>Detección de emociones en vivo</h1>
+    <p class="sub">Mire a la cámara: OpenCV detecta cada rostro y clasifica su expresión facial (feliz, triste, enojo, sorpresa, miedo, asco, desprecio o neutral).</p>
+  </div>
+  <div class="acciones">
+    <button class="btn" id="btn-detener">Detener cámara</button>
+    <button class="btn primario" id="btn-iniciar" hidden>Iniciar cámara</button>
+  </div>
+</header>
+
+<section class="vivo">
+  <div class="tarjeta video-tarjeta">
+    <div class="video-marco">
+      <img id="video" src="{% url 'asistencia:stream' %}" alt="Video en tiempo real con detección de emociones (OpenCV)" data-src="{% url 'asistencia:stream' %}">
+      <span class="insignia-vivo" id="insignia">● EN VIVO</span>
+    </div>
+  </div>
+
+  <div class="panel-lateral">
+    <div class="tarjeta">
+      <h2>Análisis del cuadro</h2>
+      <div class="metricas">
+        <div><span class="m-valor" id="m-fps">–</span><span class="m-titulo">FPS</span></div>
+        <div><span class="m-valor" id="m-rostros">–</span><span class="m-titulo">Rostros</span></div>
+      </div>
+      <p class="linea-estado">Emoción principal: <b id="m-emocion">–</b></p>
+      <p class="linea-estado">Iluminación: <b id="m-luz">–</b> · Cámara: <b id="m-camara">–</b></p>
+      <p class="linea-estado" id="m-modo"></p>
+      <ul class="en-cuadro" id="en-cuadro"></ul>
+    </div>
+
+    <div class="tarjeta">
+      <div class="tarjeta-cab">
+        <h2>Resumen de la sesión</h2>
+        <button class="btn btn-mini" id="btn-reiniciar" type="button">Reiniciar</button>
+      </div>
+      <ul class="emo-barras" id="resumen"><li class="vacio">Esperando rostros…</li></ul>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+  VA.paginaEnVivo({
+    estado: "{% url 'asistencia:api_estado' %}",
+    reiniciar: "{% url 'asistencia:api_reiniciar_emociones' %}",
+    detener: "{% url 'asistencia:api_detener' %}",
+  });
+</script>
+{% endblock %}

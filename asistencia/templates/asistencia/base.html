@@ -1,0 +1,46 @@
+{% load static %}<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}VisionAsistencia{% endblock %} · VisionAsistencia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'asistencia/css/app.css' %}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><circle cx='12' cy='12' r='11' fill='%230f766e'/><circle cx='12' cy='12' r='4' fill='white'/></svg>">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <a class="marca" href="{% url 'asistencia:panel' %}">
+        <span class="marca-icono" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="2" d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><circle cx="12" cy="11" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6.5 18c1.2-2.4 3.2-3.5 5.5-3.5s4.3 1.1 5.5 3.5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        </span>
+        <span>Vision<b>Asistencia</b></span>
+      </a>
+      {% with n=request.resolver_match.url_name %}
+      <nav class="menu">
+        <a href="{% url 'asistencia:panel' %}" class="{% if n == 'panel' %}activo{% endif %}">Panel</a>
+        <a href="{% url 'asistencia:en_vivo' %}" class="{% if n == 'en_vivo' %}activo{% endif %}">Emociones en vivo <span class="punto-vivo"></span></a>
+        <a href="{% url 'asistencia:personas' %}" class="{% if 'persona' in n %}activo{% endif %}">Personas</a>
+        <a href="{% url 'asistencia:asistencias' %}" class="{% if n == 'asistencias' %}activo{% endif %}">Asistencias</a>
+        <a href="{% url 'admin:index' %}">Administración</a>
+      </nav>
+      {% endwith %}
+      <p class="sidebar-pie">Django · OpenCV · PostgreSQL<br>Construcción de Software</p>
+    </aside>
+
+    <main class="contenido">
+      {% if messages %}
+        <div class="mensajes">
+          {% for m in messages %}<div class="mensaje {{ m.tags }}">{{ m }}</div>{% endfor %}
+        </div>
+      {% endif %}
+      {% block contenido %}{% endblock %}
+    </main>
+  </div>
+  {% csrf_token %}
+  <script src="{% static 'asistencia/js/app.js' %}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

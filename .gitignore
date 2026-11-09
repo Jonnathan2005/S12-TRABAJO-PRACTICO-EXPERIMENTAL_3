@@ -1,0 +1,25 @@
+# Entorno virtual (NO se sube al repositorio)
+venv/
+.venv/
+env/
+
+# Configuración local con credenciales
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.log
+
+# Datos generados en ejecución: rostros de personas y modelo entrenado
+media/
+staticfiles/
+db.sqlite3
+
+# Editores / IDE
+.vscode/
+.idea/
+.qodo/
+*.swp
+.DS_Store
+Thumbs.db

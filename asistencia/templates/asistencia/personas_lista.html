@@ -1,0 +1,38 @@
+{% extends 'asistencia/base.html' %}
+{% block titulo %}Personas{% endblock %}
+{% block contenido %}
+<header class="cabecera">
+  <div>
+    <h1>Personas</h1>
+    <p class="sub">Estudiantes registrados y estado de sus muestras de rostro.</p>
+  </div>
+  <a class="btn primario" href="{% url 'asistencia:persona_crear' %}">+ Nueva persona</a>
+</header>
+
+<form class="buscador" method="get">
+  <input type="search" name="q" value="{{ q }}" placeholder="Buscar por nombre, cédula o curso…" aria-label="Buscar">
+  <button class="btn">Buscar</button>
+</form>
+
+<section class="tarjeta">
+  {% if filas %}
+  <table class="tabla">
+    <thead><tr><th>Persona</th><th>Cédula</th><th>Curso</th><th>Muestras</th><th>Hoy</th><th></th></tr></thead>
+    <tbody>
+      {% for f in filas %}
+      <tr class="{% if not f.persona.activo %}inactivo{% endif %}">
+        <td><span class="avatar">{{ f.persona.iniciales }}</span>{{ f.persona }}{% if not f.persona.activo %} <span class="chip">Inactivo</span>{% endif %}</td>
+        <td>{{ f.persona.cedula }}</td>
+        <td>{{ f.persona.curso|default:'—' }}</td>
+        <td>{% if f.muestras %}<span class="chip puntual">{{ f.muestras }}</span>{% else %}<span class="chip atraso">Sin rostro</span>{% endif %}</td>
+        <td>{% if f.presente %}✔ Presente{% else %}—{% endif %}</td>
+        <td class="derecha"><a class="btn pequeno" href="{% url 'asistencia:persona_detalle' f.persona.pk %}">Abrir</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="vacio">{% if q %}Sin resultados para "{{ q }}".{% else %}Aún no hay personas. Cree la primera con “Nueva persona”.{% endif %}</p>
+  {% endif %}
+</section>
+{% endblock %}

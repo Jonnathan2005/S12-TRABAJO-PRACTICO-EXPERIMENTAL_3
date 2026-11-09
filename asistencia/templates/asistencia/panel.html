@@ -1,0 +1,87 @@
+{% extends 'asistencia/base.html' %}
+{% block titulo %}Panel{% endblock %}
+{% block contenido %}
+<header class="cabecera">
+  <div>
+    <h1>Panel de asistencia</h1>
+    <p class="sub">{% now "l, j \d\e F \d\e Y" %} · Hora límite de puntualidad: <b>{{ hora_limite }}</b></p>
+  </div>
+  <a class="btn primario" href="{% url 'asistencia:en_vivo' %}">Detectar emociones</a>
+</header>
+
+<section class="tarjetas">
+  <div class="tarjeta kpi">
+    <span class="kpi-titulo">Presentes hoy</span>
+    <span class="kpi-valor">{{ presentes }}<small> / {{ personas_activas }}</small></span>
+    <div class="medidor"><span style="width: {{ porcentaje }}%"></span></div>
+    <span class="kpi-pie">{{ porcentaje }}% de asistencia</span>
+  </div>
+  <div class="tarjeta kpi">
+    <span class="kpi-titulo">Puntuales</span>
+    <span class="kpi-valor ok">{{ puntuales }}</span>
+    <span class="kpi-pie">llegaron antes de las {{ hora_limite }}</span>
+  </div>
+  <div class="tarjeta kpi">
+    <span class="kpi-titulo">Atrasos</span>
+    <span class="kpi-valor alerta">{{ atrasos }}</span>
+    <span class="kpi-pie">después de la hora límite</span>
+  </div>
+  <div class="tarjeta kpi">
+    <span class="kpi-titulo">Ausentes</span>
+    <span class="kpi-valor">{{ ausentes }}</span>
+    <span class="kpi-pie">personas activas sin registro</span>
+  </div>
+</section>
+
+<section class="tarjeta">
+  <h2>Modelo de reconocimiento</h2>
+    {% if modelo_entrenado %}
+      <p class="estado-ok">● Modelo LBPH entrenado y listo</p>
+    {% else %}
+      <p class="estado-mal">● Sin modelo: registre rostros de al menos una persona</p>
+    {% endif %}
+    {% if ultimo_entrenamiento %}
+      <dl class="datos">
+        <dt>Último entrenamiento</dt><dd>{{ ultimo_entrenamiento.fecha|date:'d/m/Y H:i' }}</dd>
+        <dt>Personas</dt><dd>{{ ultimo_entrenamiento.personas }}</dd>
+        <dt>Muestras</dt><dd>{{ ultimo_entrenamiento.muestras }}</dd>
+        <dt>Duración</dt><dd>{{ ultimo_entrenamiento.duracion_ms }} ms</dd>
+      </dl>
+    {% endif %}
+    <form method="post" action="{% url 'asistencia:entrenar' %}">{% csrf_token %}
+      <button class="btn">Reentrenar modelo</button>
+    </form>
+    {% if sin_muestras %}
+      <h3>Pendientes de registrar rostro</h3>
+      <ul class="lista-simple">
+        {% for p in sin_muestras %}<li><a href="{% url 'asistencia:persona_detalle' p.pk %}">{{ p }}</a></li>{% endfor %}
+      </ul>
+    {% endif %}
+</section>
+
+<section class="tarjeta">
+  <div class="tarjeta-cab">
+    <h2>Registros recientes</h2>
+    <a href="{% url 'asistencia:asistencias' %}">Ver todos →</a>
+  </div>
+  {% if recientes %}
+  <table class="tabla">
+    <thead><tr><th>Persona</th><th>Fecha</th><th>Hora</th><th>Estado</th><th>Origen</th><th>Confianza</th></tr></thead>
+    <tbody>
+      {% for a in recientes %}
+      <tr>
+        <td><span class="avatar">{{ a.persona.iniciales }}</span>{{ a.persona }}</td>
+        <td>{{ a.fecha|date:'d/m/Y' }}</td>
+        <td>{{ a.hora|time:'H:i' }}</td>
+        <td><span class="chip {{ a.estado }}">{{ a.get_estado_display }}</span></td>
+        <td>{{ a.get_origen_display }}</td>
+        <td>{{ a.confianza|floatformat:0 }}%</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="vacio">Todavía no hay asistencias registradas.</p>
+  {% endif %}
+</section>
+{% endblock %}

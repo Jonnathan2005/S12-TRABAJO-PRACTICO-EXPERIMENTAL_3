@@ -1,0 +1,94 @@
+{% extends 'asistencia/base.html' %}
+{% block titulo %}{{ persona }}{% endblock %}
+{% block contenido %}
+<header class="cabecera">
+  <div class="persona-cab">
+    <span class="avatar grande">{{ persona.iniciales }}</span>
+    <div>
+      <h1>{{ persona }}</h1>
+      <p class="sub">C.I. {{ persona.cedula }}{% if persona.curso %} · {{ persona.curso }}{% endif %}{% if persona.correo %} · {{ persona.correo }}{% endif %}
+        {% if not persona.activo %}<span class="chip atraso">Inactivo</span>{% endif %}</p>
+    </div>
+  </div>
+  <div class="acciones">
+    <a class="btn" href="{% url 'asistencia:persona_editar' persona.pk %}">Editar</a>
+    <form method="post" action="{% url 'asistencia:persona_eliminar' persona.pk %}"
+          onsubmit="return confirm('¿Eliminar a {{ persona|escapejs }} con sus muestras y asistencias?');">
+      {% csrf_token %}<button class="btn peligro">Eliminar</button>
+    </form>
+  </div>
+</header>
+
+<section class="rejilla-2">
+  <div class="tarjeta">
+    <h2>1. Registro guiado con la cámara</h2>
+    <p class="sub">Se capturarán {{ objetivo }} muestras del rostro (solo debe aparecer esta persona). Las imágenes borrosas se descartan automáticamente.</p>
+    <div class="video-marco pequeno" id="registro-video" hidden>
+      <img id="video-registro" alt="Cámara para registro de rostro">
+    </div>
+    <div class="progreso" id="registro-progreso" hidden>
+      <div class="medidor"><span id="registro-barra" style="width:0%"></span></div>
+      <p id="registro-mensaje" class="sub"></p>
+    </div>
+    <div class="acciones">
+      {% if persona.activo %}
+        <button class="btn primario" id="btn-registro"
+                data-iniciar="{% url 'asistencia:api_registro_iniciar' persona.pk %}"
+                data-estado="{% url 'asistencia:api_registro_estado' %}"
+                data-cancelar="{% url 'asistencia:api_registro_cancelar' %}"
+                data-stream="{% url 'asistencia:stream' %}">Capturar rostro con la cámara</button>
+        <button class="btn" id="btn-cancelar-registro" hidden>Cancelar</button>
+      {% else %}
+        <p class="estado-mal">Active a la persona para poder registrar su rostro.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    <h2>2. O suba fotografías</h2>
+    <p class="sub">Fotos frontales, bien iluminadas, con un solo rostro. Se detecta el rostro, se recorta y se normaliza con OpenCV.</p>
+    <form method="post" enctype="multipart/form-data" action="{% url 'asistencia:persona_subir_fotos' persona.pk %}">
+      {% csrf_token %}
+      <input type="file" name="fotos" accept="image/*" multiple required>
+      <div class="acciones"><button class="btn">Subir y entrenar</button></div>
+    </form>
+  </div>
+</section>
+
+<section class="tarjeta">
+  <div class="tarjeta-cab">
+    <h2>Muestras de rostro <span class="contador">{{ total_muestras }}</span></h2>
+    {% if total_muestras %}
+    <form method="post" action="{% url 'asistencia:persona_borrar_muestras' persona.pk %}"
+          onsubmit="return confirm('¿Borrar todas las muestras de esta persona?');">
+      {% csrf_token %}<button class="btn pequeno peligro">Borrar muestras</button>
+    </form>
+    {% endif %}
+  </div>
+  {% if miniaturas %}
+    <div class="miniaturas">
+      {% for m in miniaturas %}<img src="{{ m }}" alt="Muestra de rostro normalizada" loading="lazy">{% endfor %}
+    </div>
+    <p class="sub">Vista de las últimas muestras: escala de grises, ecualizadas con CLAHE y redimensionadas a 200×200 px.</p>
+  {% else %}
+    <p class="vacio">Esta persona aún no tiene muestras de rostro.</p>
+  {% endif %}
+</section>
+
+<section class="tarjeta">
+  <h2>Historial de asistencia</h2>
+  {% if asistencias %}
+  <table class="tabla">
+    <thead><tr><th>Fecha</th><th>Hora</th><th>Estado</th><th>Origen</th><th>Confianza</th></tr></thead>
+    <tbody>
+      {% for a in asistencias %}
+      <tr><td>{{ a.fecha|date:'d/m/Y' }}</td><td>{{ a.hora|time:'H:i:s' }}</td>
+        <td><span class="chip {{ a.estado }}">{{ a.get_estado_display }}</span></td>
+        <td>{{ a.get_origen_display }}</td><td>{{ a.confianza|floatformat:0 }}%</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="vacio">Sin asistencias registradas.</p>{% endif %}
+</section>
+{% endblock %}
+{% block scripts %}<script>VA.paginaRegistro();</script>{% endblock %}
