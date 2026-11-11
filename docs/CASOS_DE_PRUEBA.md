@@ -27,3 +27,6 @@ Estas pruebas se ejecutan manualmente sobre el sistema en funcionamiento, como p
 | CP-19 | Foto sin rostro | Subir una foto de un paisaje | Aparece el aviso «No se detectó un rostro claro en: …». | |
 | CP-20 | Eliminar persona | Ficha → Eliminar → confirmar | Se borran la persona, sus muestras y sus asistencias, y el modelo se reentrena. | |
 | CP-21 | Persistencia | Reiniciar el servidor | Las personas y asistencias siguen en PostgreSQL y los modelos (LBPH y FER+) se recargan desde disco sin volver a descargarse. | |
+# Aporte de Saray Aguilar
+Integrante del equipo.
+Participación en el desarrollo del proyecto.
