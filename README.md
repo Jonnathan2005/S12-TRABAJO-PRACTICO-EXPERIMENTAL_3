@@ -106,18 +106,17 @@ pip install -r requirements.txt
 copy .env.example .env
 #    -> edite .env y escriba la contraseña de su usuario de PostgreSQL (DB_PASSWORD)
 
-# 5. Crear la base de datos y las tablas
+# 5. Crear la base de datos y las tablas (también crea el usuario admin)
 python manage.py crear_basedatos
 python manage.py migrate
 
-# 6. (Opcional) usuario para el panel /admin
-python manage.py createsuperuser
-
-# 7. Ejecutar
+# 6. Ejecutar
 python manage.py runserver
 ```
 
 Abra **http://127.0.0.1:8000/** en el navegador.
+
+**Panel de administración:** http://127.0.0.1:8000/admin/ con usuario `admin` y contraseña `Admin2026!`. El usuario se crea automáticamente al ejecutar `migrate`; puede cambiar estas credenciales con `ADMIN_USERNAME`, `ADMIN_PASSWORD` y `ADMIN_EMAIL` en `.env` (antes del primer `migrate`) o después con `python manage.py changepassword admin`.
 
 En Linux o macOS se activa el entorno con `source venv/bin/activate` y se copia el archivo con `cp .env.example .env`.
 
