@@ -3,7 +3,7 @@
 **Control de asistencia por reconocimiento facial en tiempo real** con Django, OpenCV y PostgreSQL.
 
 Práctica N.º 3 de *Construcción de Software* (UNEMI, Software 2019, A2).
-Temática elegida: **Detección de rostros para control de asistencia**.
+Temática elegida: *Detección de rostros para control de asistencia*.
 
 La cámara transmite video en vivo al navegador y se dedica a la **detección de emociones mediante expresiones faciales**: en cada cuadro OpenCV **detecta** los rostros (clasificador Haar), los recorta en gris a 64×64 y **clasifica su expresión** con la red neuronal FER+ ejecutada con `cv2.dnn` (neutral, feliz, sorpresa, tristeza, enojo, asco, miedo y desprecio). La emoción y su porcentaje se dibujan sobre el video y el panel lateral muestra el detalle por rostro y un resumen de la sesión.
 
