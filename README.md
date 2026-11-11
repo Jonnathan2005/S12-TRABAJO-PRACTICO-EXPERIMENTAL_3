@@ -13,11 +13,11 @@ La cámara transmite video en vivo al navegador y se dedica a la **detección de
 
 | Nombre | Rol |
 |---|---|
-| _(completar)_ | Backend Django / Base de datos |
-| _(completar)_ | Módulo OpenCV (detección y reconocimiento) |
-| _(completar)_ | Interfaz web |
-| _(completar)_ | Pruebas y documentación |
-| _(completar)_ | Integración y repositorio |
+| _Johnny Alexis López Vera_ | Backend Django / Base de datos |
+| _Jonnathan Ricardo Caiza Alvarez_ | Módulo OpenCV (detección y reconocimiento) |
+| _Mayra Saray Aguilar Rodriguez_ | Interfaz web |
+| _Jonathan Gabriel Castro Belfor_ | Pruebas y documentación |
+| _Zaulo Amadeus Ramirez Garcia_ | Integración y repositorio |
 
 **Video demostrativo:** _(enlace de Google Drive)_
 
@@ -69,7 +69,7 @@ Navegador ──HTTP──► Django (views.py) ──► services.py ──► 
 │   │   └── dibujo.py        # Anotaciones sobre el video
 │   ├── management/commands/ # crear_basedatos, entrenar_modelo
 │   ├── templates/ static/   # Interfaz web (HTML, CSS, JS sin dependencias)
-│   ├── tests/               # 40 pruebas automatizadas
+│   ├── tests/               # 48 pruebas automatizadas
 │   ├── models.py            # Persona, Asistencia, EntrenamientoModelo
 │   ├── services.py  views.py  forms.py  urls.py  admin.py
 ├── docs/CASOS_DE_PRUEBA.md  # Casos de prueba funcionales (de usuario)
@@ -79,6 +79,32 @@ Navegador ──HTTP──► Django (views.py) ──► services.py ──► 
 ```
 
 ---
+
+## Datos y API
+
+### Modelo de datos
+
+- **Persona:** nombres, apellidos, cédula única de 10 dígitos, correo, curso y estado activo. Las muestras faciales se guardan como archivos PNG en `media/rostros/persona_<id>/`.
+- **Asistencia:** persona, fecha, hora, confianza, estado (puntual o atraso) y origen (cámara o manual). Una restricción de base de datos impide más de una asistencia por persona y día.
+- **EntrenamientoModelo:** historial de entrenamientos LBPH, con cantidad de personas y muestras, duración, resultado y detalle.
+
+### API JSON
+
+| Ruta | Método | Función |
+|---|---|---|
+| `/api/estado/` | GET | Estado del servicio de video y datos del último cuadro procesado. |
+| `/api/camara/detener/` | POST | Detiene el servicio de cámara. |
+| `/api/emociones/reiniciar/` | POST | Reinicia el resumen de emociones de la sesión. |
+| `/api/asistencias/hoy/` | GET | Devuelve las asistencias registradas hoy y el total de personas activas. |
+| `/api/personas/<id>/registro/` | POST | Inicia el registro guiado de muestras para una persona activa. |
+| `/api/registro/estado/` | GET | Consulta el progreso del registro guiado. |
+| `/api/registro/cancelar/` | POST | Cancela el registro guiado activo. |
+
+Las rutas POST requieren token CSRF. Las respuestas JSON describen datos de la aplicación; no sustituyen las páginas de administración.
+
+### Alcance actual
+
+El video en vivo detecta rostros y clasifica expresiones con FER+ (o el detector básico de sonrisas). El proyecto también incluye el reconocedor LBPH, el entrenamiento de su modelo y el servicio para registrar asistencias. **La predicción LBPH todavía no está conectada al flujo de video y el stream no crea asistencias automáticamente.** Por ahora, la cámara se usa para analizar emociones y capturar muestras; las asistencias existentes se consultan en el panel e historial y pueden gestionarse desde Django Admin.
 
 ## Requisitos
 
